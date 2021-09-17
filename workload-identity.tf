@@ -7,6 +7,9 @@ locals {
 }
 
 resource "kubernetes_service_account" "service_accounts" {
+  depends_on = [
+    kubernetes_namespace.namespaces
+  ]
   for_each                        = local.workload_identity_profiles
   automount_service_account_token = true
   metadata {
