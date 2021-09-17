@@ -263,6 +263,15 @@ variable "enable_autopilot" {
 }
 
 variable "workload_identity_profiles" {
-  type    = map(list(string))
-  default = {}
+  description = <<EOF
+  Namespace-keyed map of GCP Service Account emails to create K8S Service Accounts for.
+  EOF
+  type        = map(list(string))
+  default     = {}
+}
+
+variable "namespaces" {
+  description = "Namespaces to add to the cluster"
+  type        = list(string)
+  default     = []
 }

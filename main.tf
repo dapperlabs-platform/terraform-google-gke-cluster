@@ -237,3 +237,13 @@ resource "google_compute_network_peering_routes_config" "gke_master" {
   import_custom_routes = var.peering_config.import_routes
   export_custom_routes = var.peering_config.export_routes
 }
+
+resource "kubernetes_namespace" "namespaces" {
+  depends_on = [
+    google_container_cluster.cluster
+  ]
+  for_each = toset(var.namespaces)
+  metadata {
+    name = each.value
+  }
+}
