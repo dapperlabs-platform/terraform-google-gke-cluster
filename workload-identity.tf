@@ -1,7 +1,11 @@
 locals {
   profiles = flatten([
     for namespace, service_accounts in var.workload_identity_profiles :
-    [for gsa in service_accounts : { gsa : gsa, namespace : namespace }]
+    [for gsa in service_accounts : {
+      gsa : gsa,
+      namespace : namespace,
+      project_id : element(split(".", element(split("@", gsa), 1)), 0)
+    }]
   ])
   workload_identity_profiles = { for profile in local.profiles : "${profile.namespace}/${profile.gsa}" => profile }
 }
@@ -27,7 +31,9 @@ resource "google_service_account_iam_member" "main" {
   depends_on = [
     kubernetes_service_account.service_accounts
   ]
-  service_account_id = "projects/${element(split(".", element(split("@", each.value.gsa), 1)), 0)}/serviceAccounts/${each.value.gsa}"
+  # service account id references service account project
+  service_account_id = "projects/${each.value.project_id}/serviceAccounts/${each.value.gsa}"
   role               = "roles/iam.workloadIdentityUser"
-  member             = "serviceAccount:${var.project_id}.svc.id.goog[${each.value.namespace}/${kubernetes_service_account.service_accounts[each.key].metadata[0].name}]"
+  # workload identity pool for GKE's GCP project
+  member = "serviceAccount:${var.project_id}.svc.id.goog[${each.value.namespace}/${kubernetes_service_account.service_accounts[each.key].metadata[0].name}]"
 }
