@@ -27,7 +27,7 @@ resource "google_service_account_iam_member" "main" {
   depends_on = [
     kubernetes_service_account.service_accounts
   ]
-  service_account_id = "projects/${var.project_id}/serviceAccounts/${each.value.gsa}"
+  service_account_id = "projects/${element(split(".", element(split("@", each.value.gsa), 1)), 0)}/serviceAccounts/${each.value.gsa}"
   role               = "roles/iam.workloadIdentityUser"
   member             = "serviceAccount:${var.project_id}.svc.id.goog[${each.value.namespace}/${kubernetes_service_account.service_accounts[each.key].metadata[0].name}]"
 }
