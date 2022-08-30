@@ -275,3 +275,9 @@ variable "namespaces" {
   type        = list(string)
   default     = []
 }
+
+variable "namespace_protection" {
+  description = "If true - mark namespace with annotation so it can't be deleted see: https://github.com/dapperlabs/kyverno-policies/tree/main/policies/deny-protected-deletes"
+  type        = bool
+  default     = true
+}
