@@ -270,6 +270,12 @@ variable "workload_identity_profiles" {
   default     = {}
 }
 
+variable "vertical_pod_autoscaling" {
+  description = "Vertical Pod Autoscaling automatically adjusts the resources of pods controlled by it."
+  type = bool
+  default = false
+}
+
 variable "namespaces" {
   description = "Namespaces to add to the cluster"
   type        = list(string)
