@@ -281,3 +281,15 @@ variable "namespace_protection" {
   type        = bool
   default     = true
 }
+
+variable "enable_asm" {
+  description = "Determines if Anthos Service Mesh should be enabled"
+  type        = bool
+  default     = false
+}
+
+variable "create_cpr" {
+  description = "Determines if the control plane revision should be installed"
+  type        = bool
+  default     = false
+}

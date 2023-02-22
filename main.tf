@@ -248,3 +248,19 @@ resource "kubernetes_namespace" "namespaces" {
     annotations = var.namespace_protection ? { "protected" = "yes" } : {}
   }
 }
+
+# Enable Anthos Service Mesh Resources
+module "enable_asm" {
+  count  = var.enable_asm ? 1 : 0
+  source = "github.com/dapperlabs-platform/terraform-asm?ref=v1.0"
+
+  project_id                = var.project_id
+  cluster_name              = var.name
+  cluster_location          = var.location
+  enable_cni                = true
+  enable_mesh_feature       = true
+  enable_fleet_registration = true
+  create_cpr                = var.create_cpr
+
+  depends_on = [google_container_cluster.cluster]
+}
