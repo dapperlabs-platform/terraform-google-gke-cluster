@@ -47,7 +47,7 @@ resource "google_container_cluster" "cluster" {
   enable_intranode_visibility = var.enable_intranode_visibility
   enable_shielded_nodes       = var.enable_shielded_nodes
   enable_tpu                  = var.enable_tpu
-  initial_node_count          = 1
+  initial_node_count          = var.initial_node_count
   remove_default_node_pool    = var.enable_autopilot ? null : true
   datapath_provider           = var.enable_dataplane_v2 ? "ADVANCED_DATAPATH" : "DATAPATH_PROVIDER_UNSPECIFIED"
   enable_autopilot            = var.enable_autopilot == true ? true : null
@@ -227,6 +227,11 @@ resource "google_container_cluster" "cluster" {
     }
   }
 
+  lifecycle {
+    ignore_changes = [
+      initial_node_count
+    ]
+  }
 }
 
 resource "google_compute_network_peering_routes_config" "gke_master" {
