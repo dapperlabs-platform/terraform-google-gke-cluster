@@ -15,7 +15,7 @@ resource "kubernetes_service_account" "service_accounts" {
     kubernetes_namespace.namespaces
   ]
   for_each                        = local.workload_identity_profiles
-  automount_service_account_token = true
+  automount_service_account_token = var.automount_service_account_token
   metadata {
     name      = element(split("@", each.value.gsa), 0)
     namespace = each.value.namespace
