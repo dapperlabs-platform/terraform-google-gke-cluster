@@ -293,3 +293,9 @@ variable "create_cpr" {
   type        = bool
   default     = false
 }
+
+variable "automount_service_account_token" {
+  description = "Instructs the cluster whether or not to automatically mount a kubernetes service account token.  Past GKE 1.24, tokens are not automatically created for a service account"
+  type        = bool
+  default     = true # done for backward compatibility
+}
