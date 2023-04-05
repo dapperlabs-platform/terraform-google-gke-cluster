@@ -264,10 +264,19 @@ variable "enable_autopilot" {
 
 variable "workload_identity_profiles" {
   description = <<EOF
-  Namespace-keyed map of GCP Service Account emails to create K8S Service Accounts for.
+  Namespace-keyed map of GCP Service Account to create K8S Service Accounts for.
   EOF
-  type        = map(list(string))
-  default     = {}
+  type = map(
+    list(
+      object(
+        {
+          email                           = string
+          automount_service_account_token = optional(bool, true)
+        }
+      )
+    )
+  )
+  default = {}
 }
 
 variable "namespaces" {
@@ -292,10 +301,4 @@ variable "create_cpr" {
   description = "Determines if the control plane revision should be installed"
   type        = bool
   default     = false
-}
-
-variable "automount_service_account_token" {
-  description = "Instructs the cluster whether or not to automatically mount a kubernetes service account token.  Past GKE 1.24, tokens are not automatically created for a service account"
-  type        = bool
-  default     = true # done for backward compatibility
 }
