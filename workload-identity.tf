@@ -1,26 +1,52 @@
 locals {
   profiles = flatten([
     for namespace, service_accounts in var.workload_identity_profiles :
-    [for gsa in service_accounts : {
-      gsa : gsa,
+    [for config in service_accounts : {
+      name : element(split("@", config.email), 0)
+      email : config.email,
+      automount_service_account_token : config.automount_service_account_token,
       namespace : namespace,
-      project_id : element(split(".", element(split("@", gsa), 1)), 0)
+      project_id : element(split(".", element(split("@", config.email), 1)), 0)
     }]
   ])
-  workload_identity_profiles = { for profile in local.profiles : "${profile.namespace}/${profile.gsa}" => profile }
+  workload_identity_profiles = { for profile in local.profiles : "${profile.namespace}/${profile.email}" => profile }
 }
 
-resource "kubernetes_service_account" "service_accounts" {
-  depends_on = [
-    kubernetes_namespace.namespaces
-  ]
-  for_each                        = local.workload_identity_profiles
-  automount_service_account_token = var.automount_service_account_token
+# Service account tokens
+resource "kubernetes_secret_v1" "tokens" {
+  for_each = local.workload_identity_profiles
+
   metadata {
-    name      = element(split("@", each.value.gsa), 0)
-    namespace = each.value.namespace
+    name = "${each.value.name}-service-account-token"
     annotations = {
-      "iam.gke.io/gcp-service-account" = each.value.gsa
+      "kubernetes.io/service-account.name" = each.value.name
+    }
+    namespace = each.value.namespace
+  }
+
+  type = "kubernetes.io/service-account-token"
+}
+
+resource "kubernetes_manifest" "service_accounts" {
+  depends_on = [
+    kubernetes_namespace.namespaces,
+    kubernetes_secret_v1.tokens,
+  ]
+  for_each = local.workload_identity_profiles
+
+  manifest = {
+    apiVersion                   = "v1"
+    kind                         = "ServiceAccount"
+    automountServiceAccountToken = each.value.automount_service_account_token
+    secrets = [{
+      name = "${each.value.name}-service-account-token"
+    }]
+    metadata = {
+      name      = each.value.name
+      namespace = each.value.namespace
+      annotations = {
+        "iam.gke.io/gcp-service-account" = each.value.email
+      }
     }
   }
 }
@@ -29,11 +55,11 @@ resource "kubernetes_service_account" "service_accounts" {
 resource "google_service_account_iam_member" "main" {
   for_each = local.workload_identity_profiles
   depends_on = [
-    kubernetes_service_account.service_accounts
+    kubernetes_manifest.service_accounts
   ]
   # service account id references service account project
-  service_account_id = "projects/${each.value.project_id}/serviceAccounts/${each.value.gsa}"
+  service_account_id = "projects/${each.value.project_id}/serviceAccounts/${each.value.email}"
   role               = "roles/iam.workloadIdentityUser"
   # workload identity pool for GKE's GCP project
-  member = "serviceAccount:${var.project_id}.svc.id.goog[${each.value.namespace}/${kubernetes_service_account.service_accounts[each.key].metadata[0].name}]"
+  member = "serviceAccount:${var.project_id}.svc.id.goog[${each.value.namespace}/${each.value.name}]"
 }
