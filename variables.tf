@@ -271,7 +271,7 @@ variable "workload_identity_profiles" {
       object(
         {
           email                           = string
-          automount_service_account_token = optional(bool, true)
+          automount_service_account_token = optional(bool, false)
         }
       )
     )
