@@ -28,6 +28,7 @@ variable "addons" {
     network_policy_config                 = optional(bool, true)
     gce_persistent_disk_csi_driver_config = optional(bool, false)
   })
+  default = {}
 }
 
 variable "enable_dataplane_v2" {
