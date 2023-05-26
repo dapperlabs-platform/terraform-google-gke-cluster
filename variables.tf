@@ -17,29 +17,17 @@
 variable "addons" {
   description = "Addons enabled in the cluster (true means enabled)."
   type = object({
-    cloudrun_config            = bool
-    dns_cache_config           = bool
-    horizontal_pod_autoscaling = bool
-    http_load_balancing        = bool
-    istio_config = object({
-      enabled = bool
-      tls     = bool
-    })
-    network_policy_config                 = bool
-    gce_persistent_disk_csi_driver_config = bool
+    cloudrun_config            = optional(bool, false)
+    dns_cache_config           = optional(bool, false)
+    horizontal_pod_autoscaling = optional(bool, true)
+    http_load_balancing        = optional(bool, true)
+    istio_config = optional(object({
+      enabled = optional(bool, false)
+      tls     = optional(bool, false)
+    }), {})
+    network_policy_config                 = optional(bool, true)
+    gce_persistent_disk_csi_driver_config = optional(bool, false)
   })
-  default = {
-    cloudrun_config            = false
-    dns_cache_config           = false
-    horizontal_pod_autoscaling = true
-    http_load_balancing        = true
-    istio_config = {
-      enabled = false
-      tls     = false
-    }
-    network_policy_config                 = true
-    gce_persistent_disk_csi_driver_config = false
-  }
 }
 
 variable "enable_dataplane_v2" {
