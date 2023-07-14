@@ -14,6 +14,9 @@ locals {
 
 # Service account tokens
 resource "kubernetes_secret_v1" "tokens" {
+  depends_on = [
+    kubernetes_service_account.service_accounts
+  ]
   for_each = { for k, v in local.workload_identity_profiles : k => v if v.automount_service_account_token }
 
   metadata {
@@ -30,7 +33,6 @@ resource "kubernetes_secret_v1" "tokens" {
 resource "kubernetes_service_account" "service_accounts" {
   depends_on = [
     kubernetes_namespace.namespaces,
-    kubernetes_secret_v1.tokens,
   ]
   for_each = local.workload_identity_profiles
 
