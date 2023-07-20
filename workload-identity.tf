@@ -5,6 +5,7 @@ locals {
       name : element(split("@", config.email), 0)
       email : config.email,
       automount_service_account_token : config.automount_service_account_token,
+      create_service_account_token : config.create_service_account_token,
       namespace : namespace,
       project_id : element(split(".", element(split("@", config.email), 1)), 0)
     }]
@@ -17,7 +18,7 @@ resource "kubernetes_secret_v1" "tokens" {
   depends_on = [
     kubernetes_service_account.service_accounts
   ]
-  for_each = { for k, v in local.workload_identity_profiles : k => v if v.automount_service_account_token }
+  for_each = { for k, v in local.workload_identity_profiles : k => v if v.automount_service_account_token && v.create_service_account_token }
 
   metadata {
     name = "${each.value.name}-service-account-token"

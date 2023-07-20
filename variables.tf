@@ -26,7 +26,7 @@ variable "addons" {
       tls     = optional(bool, false)
     }), {})
     network_policy_config                 = optional(bool, true)
-    gce_persistent_disk_csi_driver_config = optional(bool, false)
+    gce_persistent_disk_csi_driver_config = optional(bool, true)
   })
   default = {}
 }
@@ -260,6 +260,7 @@ variable "workload_identity_profiles" {
       object(
         {
           email                           = string
+          create_service_account_token    = optional(bool, false)
           automount_service_account_token = optional(bool, false)
         }
       )
