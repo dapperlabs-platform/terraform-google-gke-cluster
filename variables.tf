@@ -26,7 +26,7 @@ variable "addons" {
       tls     = optional(bool, false)
     }), {})
     network_policy_config                 = optional(bool, true)
-    gce_persistent_disk_csi_driver_config = optional(bool, false)
+    gce_persistent_disk_csi_driver_config = optional(bool, true)
   })
   default = {}
 }
