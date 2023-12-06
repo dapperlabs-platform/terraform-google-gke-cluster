@@ -27,6 +27,10 @@ variable "addons" {
     }), {})
     network_policy_config                 = optional(bool, true)
     gce_persistent_disk_csi_driver_config = optional(bool, true)
+    gcp_filestore_csi_driver_config = optional(object({
+      enabled = optional(bool, false)
+      tier    = optional(string, "standard")
+    }), {})
   })
   default = {}
 }
