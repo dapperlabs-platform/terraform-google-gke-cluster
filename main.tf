@@ -278,6 +278,6 @@ resource "kubernetes_storage_class" "example" {
   storage_provisioner = "filestore.csi.storage.gke.io"
   parameters = {
     tier    = var.addons.gcp_filestore_csi_driver_config.tier
-    network = var.network
+    network = "gke-application-cluster-vpc"
   }
 }
