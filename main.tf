@@ -83,6 +83,9 @@ resource "google_container_cluster" "cluster" {
     gce_persistent_disk_csi_driver_config {
       enabled = var.addons.gce_persistent_disk_csi_driver_config
     }
+    gcp_filestore_csi_driver_config {
+      enabled = var.addons.gcp_filestore_csi_driver_config.enabled
+    }
   }
 
   # TODO(ludomagno): support setting address ranges instead of range names
@@ -263,4 +266,18 @@ module "enable_asm" {
   create_cpr                = var.create_cpr
 
   depends_on = [google_container_cluster.cluster]
+}
+
+// If enabling filestore, creates a storage class that can be used in the cluster
+resource "kubernetes_storage_class" "example" {
+  count = var.addons.gcp_filestore_csi_driver_config.enabled ? 1 : 0
+
+  metadata {
+    name = "filestore"
+  }
+  storage_provisioner = "filestore.csi.storage.gke.io"
+  parameters = {
+    tier    = var.addons.gcp_filestore_csi_driver_config.tier
+    network = var.network
+  }
 }
