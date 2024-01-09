@@ -255,7 +255,7 @@ resource "kubernetes_namespace" "namespaces" {
 # Enable Anthos Service Mesh Resources
 module "enable_asm" {
   count  = var.enable_asm ? 1 : 0
-  source = "github.com/dapperlabs-platform/terraform-asm?ref=v1.0"
+  source = "github.com/dapperlabs-platform/terraform-asm?ref=v1.1"
 
   project_id                = var.project_id
   cluster_name              = var.name
