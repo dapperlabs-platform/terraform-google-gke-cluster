@@ -105,7 +105,6 @@ No modules.
 | <a name="input_default_max_pods_per_node"></a> [default\_max\_pods\_per\_node](#input\_default\_max\_pods\_per\_node) | Maximum number of pods per node in this cluster. | `number` | `110` | no |
 | <a name="input_description"></a> [description](#input\_description) | Cluster description. | `string` | `null` | no |
 | <a name="input_enable_autopilot"></a> [enable\_autopilot](#input\_enable\_autopilot) | Create cluster in autopilot mode. With autopilot there's no need to create node-pools and some features are not supported (e.g. setting default\_max\_pods\_per\_node) | `bool` | `false` | no |
-| <a name="input_enable_binary_authorization"></a> [enable\_binary\_authorization](#input\_enable\_binary\_authorization) | Enable Google Binary Authorization. | `bool` | `null` | no |
 | <a name="input_enable_dataplane_v2"></a> [enable\_dataplane\_v2](#input\_enable\_dataplane\_v2) | Enable Dataplane V2 on the cluster, will disable network\_policy addons config | `bool` | `false` | no |
 | <a name="input_enable_intranode_visibility"></a> [enable\_intranode\_visibility](#input\_enable\_intranode\_visibility) | Enable intra-node visibility to make same node pod to pod traffic visible. | `bool` | `null` | no |
 | <a name="input_enable_shielded_nodes"></a> [enable\_shielded\_nodes](#input\_enable\_shielded\_nodes) | Enable Shielded Nodes features on all nodes in this cluster. | `bool` | `null` | no |
