@@ -91,12 +91,6 @@ variable "description" {
   default     = null
 }
 
-variable "enable_binary_authorization" {
-  description = "Enable Google Binary Authorization."
-  type        = bool
-  default     = null
-}
-
 variable "enable_intranode_visibility" {
   description = "Enable intra-node visibility to make same node pod to pod traffic visible."
   type        = bool
