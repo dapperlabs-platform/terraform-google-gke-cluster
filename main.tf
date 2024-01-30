@@ -27,6 +27,14 @@ locals {
     ? var.project_id
     : var.peering_config.project_id
   )
+
+  namespace_protection_annotations = var.namespace_protection ? { "protected" = "yes" } : {}
+  sidecar_injection_annotations    = var.sidecar_injection ? { "mesh.cloud.google.com/proxy" = "{ \"managed\" : \"true\"}" } : {}
+
+  all_namespace_annotations = merge(local.namespace_protection_annotations,
+  local.sidecar_injection_annotations)
+
+  k8s_namespace_labels = var.sidecar_injection ? { "istio.io/rev" = "asm-managed" } : {}
 }
 
 resource "google_container_cluster" "cluster" {
@@ -247,7 +255,9 @@ resource "kubernetes_namespace" "namespaces" {
   for_each = toset(var.namespaces)
   metadata {
     name        = each.value
-    annotations = var.namespace_protection ? { "protected" = "yes" } : {}
+    annotations = local.all_namespace_annotations
+
+    labels = local.k8s_namespace_labels
   }
 }
 

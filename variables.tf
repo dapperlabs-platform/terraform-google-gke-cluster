@@ -290,3 +290,9 @@ variable "create_cpr" {
   type        = bool
   default     = false
 }
+
+variable "sidecar_injection" {
+  description = "If true - mark namespace with annotation so sidecar proxies can be injected"
+  type        = bool
+  default     = true
+}
