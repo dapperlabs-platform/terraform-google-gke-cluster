@@ -290,3 +290,9 @@ variable "create_cpr" {
   type        = bool
   default     = false
 }
+
+variable "initial_node_count" {
+  description = "The initial number of nodes to provision in each zone"
+  type        = number
+  default     = 1
+}
