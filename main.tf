@@ -248,6 +248,9 @@ resource "kubernetes_namespace" "namespaces" {
   metadata {
     name        = each.value
     annotations = var.namespace_protection ? { "protected" = "yes" } : {}
+    labels = {
+      "goldilocks.fairwinds.com/enabled" = "true"
+    }
   }
 }
 
