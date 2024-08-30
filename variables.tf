@@ -290,3 +290,25 @@ variable "create_cpr" {
   type        = bool
   default     = false
 }
+
+variable "backup_configs" {
+  description = "Configuration for Backup for GKE."
+  type = object({
+    enable_backup_agent = optional(bool, false)
+    backup_plans = optional(map(object({
+      region                            = string
+      applications                      = optional(map(list(string)))
+      encryption_key                    = optional(string)
+      include_secrets                   = optional(bool, true)
+      include_volume_data               = optional(bool, true)
+      labels                            = optional(map(string))
+      namespaces                        = optional(list(string))
+      schedule                          = optional(string)
+      retention_policy_days             = optional(number)
+      retention_policy_lock             = optional(bool, false)
+      retention_policy_delete_lock_days = optional(number)
+    })), {})
+  })
+  default  = {}
+  nullable = false
+}

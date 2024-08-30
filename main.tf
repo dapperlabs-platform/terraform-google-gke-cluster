@@ -228,7 +228,63 @@ resource "google_container_cluster" "cluster" {
       workload_pool = "${var.project_id}.svc.id.goog"
     }
   }
+}
 
+resource "google_gke_backup_backup_plan" "backup_plan" {
+  for_each = (
+    var.backup_configs.enable_backup_agent
+    ? var.backup_configs.backup_plans
+    : {}
+  )
+  name     = each.key
+  cluster  = google_container_cluster.cluster.id
+  location = each.value.region
+  project  = var.project_id
+  labels   = each.value.labels
+  retention_policy {
+    backup_delete_lock_days = try(each.value.retention_policy_delete_lock_days)
+    backup_retain_days      = try(each.value.retention_policy_days)
+    locked                  = try(each.value.retention_policy_lock)
+  }
+  backup_schedule {
+    cron_schedule = each.value.schedule
+  }
+  backup_config {
+    include_volume_data = each.value.include_volume_data
+    include_secrets     = each.value.include_secrets
+    dynamic "encryption_key" {
+      for_each = each.value.encryption_key != null ? [""] : []
+      content {
+        gcp_kms_encryption_key = each.value.encryption_key
+      }
+    }
+    all_namespaces = (
+      lookup(each.value, "namespaces", null) != null
+      ||
+      lookup(each.value, "applications", null) != null ? null : true
+    )
+    dynamic "selected_namespaces" {
+      for_each = each.value.namespaces != null ? [""] : []
+      content {
+        namespaces = each.value.namespaces
+      }
+    }
+    dynamic "selected_applications" {
+      for_each = each.value.applications != null ? [""] : []
+      content {
+        dynamic "namespaced_names" {
+          for_each = flatten([for k, vs in each.value.applications : [
+            for v in vs : { namespace = k, name = v }
+          ]])
+          content {
+            namespace = namespaced_names.value.namespace
+            name      = namespaced_names.value.name
+          }
+        }
+      }
+
+    }
+  }
 }
 
 resource "google_compute_network_peering_routes_config" "gke_master" {
