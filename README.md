@@ -178,7 +178,7 @@ limitations under the License.
 | <a name="input_master_authorized_ranges"></a> [master\_authorized\_ranges](#input\_master\_authorized\_ranges) | External Ip address ranges that can access the Kubernetes cluster master through HTTPS. | `map(string)` | `{}` | no |
 | <a name="input_min_master_version"></a> [min\_master\_version](#input\_min\_master\_version) | Minimum version of the master, defaults to the version of the most recent official release. | `string` | `null` | no |
 | <a name="input_monitoring_service"></a> [monitoring\_service](#input\_monitoring\_service) | Monitoring service | `string` | `"none"` | no |
-| <a name="input_monitoring_config"></a> [monitoring\_config](#input\_monitoring\_config) | Configuration for monitoring | <pre>object({<br>    enable_components = list(string)<br>  })</pre> | `null` | no |
+| <a name="input_monitoring_components"></a> [monitoring\_components](#input\_monitoring\_components) | List of monitoring components to enable. Supported values include: SYSTEM_COMPONENTS, APISERVER, SCHEDULER, CONTROLLER_MANAGER, STORAGE, HPA, POD, DAEMONSET, DEPLOYMENT, STATEFULSET | `list(string)` | `null` | no |
 | <a name="input_name"></a> [name](#input\_name) | Cluster name. | `string` | n/a | yes |
 | <a name="input_namespace_protection"></a> [namespace\_protection](#input\_namespace\_protection) | If true - mark namespace with annotation so it can't be deleted see: https://github.com/dapperlabs/kyverno-policies/tree/main/policies/deny-protected-deletes | `bool` | `true` | no |
 | <a name="input_namespaces"></a> [namespaces](#input\_namespaces) | Namespaces to add to the cluster | `list(string)` | `[]` | no |

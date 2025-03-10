@@ -313,10 +313,8 @@ variable "backup_configs" {
   nullable = false
 }
 
-variable "monitoring_config" {
-  description = "Configuration for monitoring"
-  type = object({
-    enable_components = list(string)
-  })
-  default = null
+variable "monitoring_components" {
+  description = "List of monitoring components to enable. Supported values include: SYSTEM_COMPONENTS, APISERVER, SCHEDULER, CONTROLLER_MANAGER, STORAGE, HPA, POD, DAEMONSET, DEPLOYMENT, STATEFULSET"
+  type        = list(string)
+  default     = null
 }

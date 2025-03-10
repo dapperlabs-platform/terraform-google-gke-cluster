@@ -230,9 +230,9 @@ resource "google_container_cluster" "cluster" {
   }
 
   dynamic "monitoring_config" {
-    for_each = var.monitoring_config != null ? [""] : []
+    for_each = var.monitoring_components != null ? [""] : []
     content {
-      enable_components = var.monitoring_config.enable_components
+      enable_components = var.monitoring_components
     }
   }
 }
