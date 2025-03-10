@@ -312,3 +312,11 @@ variable "backup_configs" {
   default  = {}
   nullable = false
 }
+
+variable "monitoring_config" {
+  description = "Configuration for monitoring"
+  type = object({
+    enable_components = list(string)
+  })
+  default = null
+}
