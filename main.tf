@@ -230,9 +230,16 @@ resource "google_container_cluster" "cluster" {
   }
 
   dynamic "monitoring_config" {
-    for_each = var.monitoring_components != null ? [""] : []
+    for_each = var.monitoring_components != null || var.managed_prometheus != null ? [""] : []
     content {
       enable_components = var.monitoring_components
+
+      dynamic "managed_prometheus" {
+        for_each = var.managed_prometheus != null ? [""] : []
+        content {
+          enabled = var.managed_prometheus
+        }
+      }
     }
   }
 }
