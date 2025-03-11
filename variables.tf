@@ -318,3 +318,9 @@ variable "monitoring_components" {
   type        = list(string)
   default     = null
 }
+
+variable "managed_prometheus" {
+  description = "Enable Managed Service for Prometheus"
+  type        = bool
+  default     = null
+}
