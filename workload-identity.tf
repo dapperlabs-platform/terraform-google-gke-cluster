@@ -50,7 +50,8 @@ resource "kubernetes_service_account" "service_accounts" {
 
 # Allow the KSA to impersonate the GSA by creating IAM policy binding between them
 resource "google_service_account_iam_member" "main" {
-  for_each = local.workload_identity_profiles
+  # We dont want to create these IAM bindings for each region, only the original cluster in an environment
+  for_each = var.secondary_region == true ? {} : local.workload_identity_profiles
   depends_on = [
     kubernetes_service_account.service_accounts
   ]
