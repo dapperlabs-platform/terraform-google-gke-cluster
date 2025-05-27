@@ -318,3 +318,9 @@ variable "monitoring_components" {
   type        = list(string)
   default     = null
 }
+
+variable "secondary_region" {
+  type        = bool
+  description = "Set to true if this is used for a non-default region deployment. This is needed to we don't recreate the workloadIdentityUser IAM binding each time we create a new region."
+  default     = false
+}
