@@ -50,6 +50,7 @@ resource "google_container_cluster" "cluster" {
   remove_default_node_pool    = var.enable_autopilot ? null : true
   datapath_provider           = var.enable_dataplane_v2 ? "ADVANCED_DATAPATH" : "DATAPATH_PROVIDER_UNSPECIFIED"
   enable_autopilot            = var.enable_autopilot == true ? true : null
+  deletion_protection         = var.secondary_region == true ? false : true
 
   # node_config {}
   # NOTE: Default node_pool is deleted, so node_config (here) is extranneous.
