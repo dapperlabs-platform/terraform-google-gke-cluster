@@ -16,9 +16,10 @@ locals {
 # Service account tokens
 resource "kubernetes_secret_v1" "tokens" {
   depends_on = [
-    kubernetes_service_account.service_accounts
+    kubernetes_service_account.service_accounts,
+    google_container_cluster.cluster,
   ]
-  for_each = { for k, v in local.workload_identity_profiles : k => v if v.automount_service_account_token && v.create_service_account_token }
+  for_each = var.secondary_region == true ? {} : { for k, v in local.workload_identity_profiles : k => v if v.automount_service_account_token && v.create_service_account_token }
 
   metadata {
     name = "${each.value.name}-service-account-token"
@@ -34,8 +35,9 @@ resource "kubernetes_secret_v1" "tokens" {
 resource "kubernetes_service_account" "service_accounts" {
   depends_on = [
     kubernetes_namespace.namespaces,
+    google_container_cluster.cluster,
   ]
-  for_each = local.workload_identity_profiles
+  for_each = var.secondary_region == true ? {} : local.workload_identity_profiles
 
   metadata {
     name      = each.value.name
@@ -53,7 +55,8 @@ resource "google_service_account_iam_member" "main" {
   # We dont want to create these IAM bindings for each region, only the original cluster in an environment
   for_each = var.secondary_region == true ? {} : local.workload_identity_profiles
   depends_on = [
-    kubernetes_service_account.service_accounts
+    kubernetes_service_account.service_accounts,
+    google_container_cluster.cluster,
   ]
   # service account id references service account project
   service_account_id = "projects/${each.value.project_id}/serviceAccounts/${each.value.email}"

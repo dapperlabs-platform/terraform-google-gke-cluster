@@ -308,7 +308,7 @@ resource "kubernetes_namespace" "namespaces" {
   depends_on = [
     google_container_cluster.cluster
   ]
-  for_each = toset(var.namespaces)
+  for_each = var.secondary_region == true ? toset([]) : toset(var.namespaces)
   metadata {
     name        = each.value
     annotations = var.namespace_protection ? { "protected" = "yes" } : {}
