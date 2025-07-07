@@ -304,20 +304,6 @@ resource "google_compute_network_peering_routes_config" "gke_master" {
   export_custom_routes = var.peering_config.export_routes
 }
 
-resource "kubernetes_namespace" "namespaces" {
-  depends_on = [
-    google_container_cluster.cluster
-  ]
-  for_each = var.secondary_region == true ? toset([]) : toset(var.namespaces)
-  metadata {
-    name        = each.value
-    annotations = var.namespace_protection ? { "protected" = "yes" } : {}
-    labels = {
-      "goldilocks.fairwinds.com/enabled" = "true"
-    }
-  }
-}
-
 # Enable Anthos Service Mesh Resources
 module "enable_asm" {
   count  = var.enable_asm ? 1 : 0
@@ -332,20 +318,6 @@ module "enable_asm" {
   create_cpr                = var.create_cpr
 
   depends_on = [google_container_cluster.cluster]
-}
-
-// If enabling filestore, creates a storage class that can be used in the cluster
-resource "kubernetes_storage_class" "example" {
-  count = var.addons.gcp_filestore_csi_driver_config.enabled ? 1 : 0
-
-  metadata {
-    name = "filestore"
-  }
-  storage_provisioner = "filestore.csi.storage.gke.io"
-  parameters = {
-    tier    = var.addons.gcp_filestore_csi_driver_config.tier
-    network = "gke-application-cluster-vpc"
-  }
 }
 
 # Create GSM secret with Cluster details -> used to register cluster in ArgoCD more easily

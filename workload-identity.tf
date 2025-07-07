@@ -13,49 +13,11 @@ locals {
   workload_identity_profiles = { for profile in local.profiles : "${profile.namespace}/${profile.email}" => profile }
 }
 
-# Service account tokens
-resource "kubernetes_secret_v1" "tokens" {
-  depends_on = [
-    kubernetes_service_account.service_accounts,
-    google_container_cluster.cluster,
-  ]
-  for_each = var.secondary_region == true ? {} : { for k, v in local.workload_identity_profiles : k => v if v.automount_service_account_token && v.create_service_account_token }
-
-  metadata {
-    name = "${each.value.name}-service-account-token"
-    annotations = {
-      "kubernetes.io/service-account.name" = each.value.name
-    }
-    namespace = each.value.namespace
-  }
-
-  type = "kubernetes.io/service-account-token"
-}
-
-resource "kubernetes_service_account" "service_accounts" {
-  depends_on = [
-    kubernetes_namespace.namespaces,
-    google_container_cluster.cluster,
-  ]
-  for_each = var.secondary_region == true ? {} : local.workload_identity_profiles
-
-  metadata {
-    name      = each.value.name
-    namespace = each.value.namespace
-    annotations = {
-      "iam.gke.io/gcp-service-account" = each.value.email
-    }
-  }
-
-  automount_service_account_token = each.value.automount_service_account_token
-}
-
 # Allow the KSA to impersonate the GSA by creating IAM policy binding between them
 resource "google_service_account_iam_member" "main" {
   # We dont want to create these IAM bindings for each region, only the original cluster in an environment
   for_each = var.secondary_region == true ? {} : local.workload_identity_profiles
   depends_on = [
-    kubernetes_service_account.service_accounts,
     google_container_cluster.cluster,
   ]
   # service account id references service account project
