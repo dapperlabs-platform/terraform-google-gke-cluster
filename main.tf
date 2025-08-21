@@ -359,8 +359,8 @@ resource "google_secret_manager_secret" "gke_cluster_ca" {
 }
 
 resource "google_secret_manager_secret_version" "gke_cluster_ca" {
-  secret      = google_secret_manager_secret.gke_cluster_ca.id
-  secret_data = google_container_cluster.cluster.master_auth[0].cluster_ca_certificate
+  secret         = google_secret_manager_secret.gke_cluster_ca.id
+  secret_data_wo = google_container_cluster.cluster.master_auth[0].cluster_ca_certificate
 }
 
 # The clusters public endpoint
@@ -373,6 +373,6 @@ resource "google_secret_manager_secret" "gke_cluster_endpoint" {
 }
 
 resource "google_secret_manager_secret_version" "gke_cluster_endpoint" {
-  secret      = google_secret_manager_secret.gke_cluster_endpoint.id
-  secret_data = google_container_cluster.cluster.endpoint
+  secret         = google_secret_manager_secret.gke_cluster_endpoint.id
+  secret_data_wo = google_container_cluster.cluster.endpoint
 }
